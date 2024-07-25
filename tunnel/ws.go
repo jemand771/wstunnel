@@ -67,10 +67,9 @@ func wsHandler(t *WSTunnelServer, w http.ResponseWriter, r *http.Request) {
 	}
 	// Get/Create RemoteServer
 	rs := t.getRemoteServer(token(tok), true)
-	// Check if the mutex is already locked by previous connection
-	if !rs.readMutex.TryLock() {
-		rs.readMutex.Unlock()
-	}
+	// force unlock
+	rs.readMutex.TryLock()
+	rs.readMutex.Unlock()
 	rs.remoteAddr = addr
 	rs.lastActivity = time.Now()
 	t.Log.Info("WS new tunnel connection", "token", logTok, "addr", addr, "ws", wsp(ws),
